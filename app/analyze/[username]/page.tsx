@@ -31,6 +31,15 @@ export default async function AnalyzePage({ params }: AnalyzePageProps) {
   if (!isValidUsername(displayUsername)) {
     notFound();
   }
+  const response = await fetch(
+    `http://localhost:3000/api/leetcode/${encodeURIComponent(displayUsername)}`,
+    {
+      cache: "no-store",
+    }
+  );
+  
+  const data = await response.json();
+  const profile = data.profile; 
 
   return (
     <div className="relative min-h-full overflow-hidden bg-background text-foreground">
@@ -97,15 +106,38 @@ export default async function AnalyzePage({ params }: AnalyzePageProps) {
             </div>
           </section>
 
-          <section className="rounded-2xl border border-border bg-surface/50 p-6">
-            <p className="text-sm font-medium uppercase tracking-widest text-accent-secondary">
-              Status
-            </p>
-            <p className="mt-4 text-2xl font-semibold">Profile Loaded</p>
-            <p className="mt-2 text-sm text-muted">
-            LeetCode analytics will appear here once profile data is fetched.
-            </p>
-          </section>
+<section className="rounded-2xl border border-border bg-surface/50 p-6">
+  <p className="text-sm font-medium uppercase tracking-widest text-accent-secondary">
+    Stats
+  </p>
+
+  <div className="mt-4 space-y-3">
+    <div className="flex justify-between">
+      <span>Total Solved</span>
+      <span className="font-semibold">{profile.solved}</span>
+    </div>
+
+    <div className="flex justify-between">
+      <span>Easy</span>
+      <span className="font-semibold">{profile.easy}</span>
+    </div>
+
+    <div className="flex justify-between">
+      <span>Medium</span>
+      <span className="font-semibold">{profile.medium}</span>
+    </div>
+
+    <div className="flex justify-between">
+      <span>Hard</span>
+      <span className="font-semibold">{profile.hard}</span>
+    </div>
+
+    <div className="flex justify-between">
+      <span>Ranking</span>
+      <span className="font-semibold">{profile.ranking}</span>
+    </div>
+  </div>
+</section>
 
           <section className="rounded-2xl border border-dashed border-border bg-surface/30 p-6 lg:col-span-3">
             <p className="text-sm font-medium text-muted">Coming next</p>

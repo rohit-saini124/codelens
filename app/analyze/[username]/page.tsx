@@ -1,3 +1,4 @@
+import { getLeetCodeProfile } from "@/lib/leetcode";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -31,15 +32,11 @@ export default async function AnalyzePage({ params }: AnalyzePageProps) {
   if (!isValidUsername(displayUsername)) {
     notFound();
   }
-  const response = await fetch(
-    `http://localhost:3000/api/leetcode/${encodeURIComponent(displayUsername)}`,
-    {
-      cache: "no-store",
-    }
-  );
-  
-  const data = await response.json();
-  const profile = data.profile; 
+  const profile = await getLeetCodeProfile(displayUsername);
+
+  if (!profile) {
+    notFound();
+  } 
 
   return (
     <div className="relative min-h-full overflow-hidden bg-background text-foreground">

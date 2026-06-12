@@ -13,21 +13,27 @@ function LogoIcon({ className }: { className?: string }) {
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
     >
-      <rect
-        x="2"
-        y="6"
-        width="28"
-        height="20"
-        rx="4"
+      <circle
+        cx="14"
+        cy="14"
+        r="8"
         stroke="currentColor"
-        strokeWidth="2"
+        strokeWidth="2.5"
       />
-      <circle cx="12" cy="16" r="4" fill="currentColor" />
+
       <path
-        d="M18 13h8M18 16h6M18 19h4"
+        d="M20 20L27 27"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+      />
+
+      <path
+        d="M11 16L13.5 13.5L16 15L19 11"
         stroke="currentColor"
         strokeWidth="2"
         strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
@@ -238,7 +244,7 @@ export default function Home() {
           <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent/10 text-accent ring-1 ring-accent/20 transition group-hover:bg-accent/15">
             <LogoIcon className="h-5 w-5" />
           </span>
-          <span className="text-lg font-semibold tracking-tight">CodeLens</span>
+          <span className="bg-gradient-to-r from-accent to-accent-secondary bg-clip-text text-lg font-bold tracking-tight text-transparent"> CodeLens </span>
         </a>
         <nav className="hidden items-center gap-8 text-sm text-muted md:flex">
           <a href="#features" className="transition hover:text-foreground">

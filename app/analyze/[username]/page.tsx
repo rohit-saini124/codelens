@@ -1,3 +1,4 @@
+import { generateObservations } from "@/lib/analysis";
 import { getLeetCodeProfile } from "@/lib/leetcode";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -33,10 +34,34 @@ export default async function AnalyzePage({ params }: AnalyzePageProps) {
     notFound();
   }
   const profile = await getLeetCodeProfile(displayUsername);
+  const observations = profile
+  ? generateObservations(profile)
+  : [];
+  const topTopics = profile
+  ? [
+      ...profile.topics.fundamental,
+      ...profile.topics.intermediate,
+      ...profile.topics.advanced,
+    ]
+      .sort((a, b) => b.problemsSolved - a.problemsSolved)
+      .slice(0, 5)
+  : [];
 
   if (!profile) {
     notFound();
   } 
+  let insight = "";
+
+  if (profile.solved < 50) {
+    insight =
+      "You are in the early stages of your DSA journey. Focus on building consistency and solving problems across multiple topics.";
+  } else if (profile.solved < 200) {
+    insight =
+      "You have built a solid foundation. Continue increasing medium-level problem exposure and topic coverage.";
+  } else {
+    insight =
+      "You have significant problem-solving experience. Focus on advanced topics, contest performance, and interview-oriented preparation.";
+  }
 
   return (
     <div className="relative min-h-full overflow-hidden bg-background text-foreground">
@@ -135,24 +160,68 @@ export default async function AnalyzePage({ params }: AnalyzePageProps) {
     </div>
   </div>
 </section>
+<section className="rounded-2xl border border-border bg-surface/50 p-6 lg:col-span-3">
+<p className="text-sm font-medium uppercase tracking-widest text-accent">
+  Topic Exposure
+</p>
+<p className="mt-2 text-sm text-muted">
+  Based on {profile.solved} solved problems
+</p>
+  <div className="mt-6 space-y-4">
+    {topTopics.map((topic) => (
+      <div key={topic.tagSlug}>
+        <div className="mb-2 flex items-center justify-between text-sm">
+  <span>{topic.tagName}</span>
 
-          <section className="rounded-2xl border border-dashed border-border bg-surface/30 p-6 lg:col-span-3">
-            <p className="text-sm font-medium text-muted">Coming next</p>
-            <ul className="mt-4 grid gap-3 sm:grid-cols-3">
-              {[
-                "Topic coverage breakdown",
-                "Difficulty progression charts",
-                "Personalized DSA roadmap",
-              ].map((item) => (
-                <li
-                  key={item}
-                  className="rounded-xl border border-border bg-background/40 px-4 py-3 text-sm"
-                >
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </section>
+  <span className="font-mono text-muted">
+    {topic.problemsSolved} solves •{" "}
+    {Math.round(
+      (topic.problemsSolved / profile.solved) * 100
+    )}
+    %
+  </span>
+</div>
+
+        <div className="h-2 overflow-hidden rounded-full bg-zinc-800">
+        <div
+      className="h-full rounded-full bg-accent"
+        style={{
+          width: `${Math.min(
+            (topic.problemsSolved / profile.solved) * 100,
+              100
+        )}%`,
+       }}
+          />
+        </div>
+      </div>
+    ))}
+  </div>
+
+  <p className="mt-6 text-xs text-muted">
+  * Percentages represent the share of solved problems
+  containing that topic tag. A problem may belong to
+  multiple topics, so percentages can overlap.
+</p>
+
+</section>
+
+
+<section className="rounded-2xl border border-border bg-surface/50 p-6 lg:col-span-3">
+  <p className="text-sm font-medium uppercase tracking-widest text-accent">
+    Observations
+  </p>
+
+  <div className="mt-4 space-y-3">
+    {observations.map((observation, index) => (
+      <div
+        key={index}
+        className="rounded-xl border border-border bg-background/40 p-4"
+      >
+        {observation}
+      </div>
+    ))}
+  </div>
+</section>
         </div>
       </main>
     </div>

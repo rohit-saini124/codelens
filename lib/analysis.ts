@@ -1,3 +1,24 @@
+type Profile = {
+    solved: number;
+    easy: number;
+    medium: number;
+    hard: number;
+    topics: {
+      advanced: {
+        tagName: string;
+        problemsSolved: number;
+      }[];
+      intermediate: {
+        tagName: string;
+        problemsSolved: number;
+      }[];
+      fundamental: {
+        tagName: string;
+        problemsSolved: number;
+      }[];
+    };
+  };
+
 export function generateObservations(profile: Profile): string[] {
     const observations: string[] = [];
   

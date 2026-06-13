@@ -1,3 +1,5 @@
+import { assessInterviewReadiness } from "@/lib/interview-assessment";
+import { analyzeWeaknesses } from "@/lib/weakness-analysis";
 import ContestRatingChart from "@/components/ContestRatingChart";
 import { analyzeContestHistory } from "@/lib/contest-analysis";
 import { calculateMetrics } from "@/lib/metrics";
@@ -47,6 +49,24 @@ export default async function AnalyzePage({ params }: AnalyzePageProps) {
   profile?.contestHistory
     ? analyzeContestHistory(profile.contestHistory)
     : null;
+
+    const interviewAssessment = profile
+  ? assessInterviewReadiness(profile)
+  : null;
+
+    const weaknessAnalysis = profile
+  ? analyzeWeaknesses(profile.topics)
+  : null;
+  
+  const profileLevel = !profile
+  ? "Unknown"
+  : profile.solved >= 1500
+  ? "Elite"
+  : profile.solved >= 500
+  ? "Advanced"
+  : profile.solved >= 100
+  ? "Intermediate"
+  : "Beginner";
 
   const topTopics = profile
   ? [
@@ -216,6 +236,85 @@ export default async function AnalyzePage({ params }: AnalyzePageProps) {
 
 </section>
 
+{weaknessAnalysis && (
+<section className="rounded-2xl border border-border bg-surface/50 p-6 lg:col-span-3">
+
+  <p className="text-sm font-medium uppercase tracking-widest text-accent">
+    Weakness Analysis
+  </p>
+
+  <p className="mt-2 text-sm text-muted">
+  Profile Level:{" "}
+  <span className="font-semibold text-foreground">
+    {profileLevel}
+  </span>
+</p>
+
+  <div className="mt-6 grid gap-6 md:grid-cols-3">
+
+    <div>
+      <h3 className="font-semibold text-green-400">
+        Strong Areas
+      </h3>
+
+      <div className="mt-3 space-y-2">
+        {weaknessAnalysis.strongTopics.map((topic) => (
+          <div
+            key={topic.tagName}
+            className="rounded-lg border border-border bg-background/40 p-3"
+          >
+            ✓ {topic.tagName}
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <div>
+    <h3 className="font-semibold text-yellow-400">
+  Growth Opportunities
+</h3>
+      <div className="mt-3 space-y-2">
+      {weaknessAnalysis.weakTopics.length > 0 ? (
+  weaknessAnalysis.weakTopics.map((topic) => (
+    <div
+      key={topic.tagName}
+      className="rounded-lg border border-border bg-background/40 p-3"
+    >
+      ⚠ {topic.tagName}
+    </div>
+  ))
+) : (
+  <div className="rounded-lg border border-border bg-background/40 p-3 text-muted">
+    No significant weaknesses detected.
+  </div>
+)}
+      </div>
+    </div>
+
+    <div>
+      <h3 className="font-semibold text-accent">
+        Recommended Next
+      </h3>
+
+      <div className="mt-3 space-y-2">
+        {weaknessAnalysis.recommendedTopics.map(
+          (topic, index) => (
+            <div
+              key={topic.tagName}
+              className="rounded-lg border border-border bg-background/40 p-3"
+            >
+              {index + 1}. {topic.tagName}
+            </div>
+          )
+        )}
+      </div>
+    </div>
+
+  </div>
+
+</section>
+)}
+
 <section className="rounded-2xl border border-border bg-surface/50 p-6 lg:col-span-3">
   <p className="text-sm font-medium uppercase tracking-widest text-accent">
     Profile Assessment
@@ -277,6 +376,118 @@ export default async function AnalyzePage({ params }: AnalyzePageProps) {
   </div>
   )}
 </section>
+
+{interviewAssessment && (
+  <section className="rounded-2xl border border-border bg-surface/50 p-6 lg:col-span-3">
+   <p>
+    Interview Readiness
+  </p>
+
+  <div className="mt-4">
+    <p className="text-4xl font-bold">
+      {interviewAssessment.overallScore}
+      <span className="text-lg text-muted">
+        /100
+      </span>
+    </p>
+
+    <p className="mt-2 text-muted">
+      {interviewAssessment.verdict}
+    </p>
+  </div>
+
+  <div className="mt-8 grid gap-4 md:grid-cols-5">
+
+    <div className="rounded-xl border border-border p-4">
+      <p className="text-xs text-muted">
+        Problem Solving
+      </p>
+      <p className="mt-1 text-2xl font-semibold">
+        {interviewAssessment.problemSolvingScore}
+      </p>
+    </div>
+
+    <div className="rounded-xl border border-border p-4">
+      <p className="text-xs text-muted">
+        Topic Coverage
+      </p>
+      <p className="mt-1 text-2xl font-semibold">
+        {interviewAssessment.topicCoverageScore}
+      </p>
+    </div>
+
+    <div className="rounded-xl border border-border p-4">
+      <p className="text-xs text-muted">
+        Core Topics
+      </p>
+      <p className="mt-1 text-2xl font-semibold">
+        {interviewAssessment.coreTopicScore}
+      </p>
+    </div>
+
+    <div className="rounded-xl border border-border p-4">
+      <p className="text-xs text-muted">
+        Advanced Topics
+      </p>
+      <p className="mt-1 text-2xl font-semibold">
+        {interviewAssessment.advancedExposureScore}
+      </p>
+    </div>
+
+    <div className="rounded-xl border border-border p-4">
+      <p className="text-xs text-muted">
+        Contest
+      </p>
+      <p className="mt-1 text-2xl font-semibold">
+        {interviewAssessment.contestScore}
+      </p>
+    </div>
+
+  </div>
+
+  <div className="mt-8 grid gap-6 md:grid-cols-2">
+
+    <div>
+      <h3 className="font-semibold text-green-400">
+        Strengths
+      </h3>
+
+      <ul className="mt-3 space-y-2">
+        {interviewAssessment.strengths.map(
+          (strength) => (
+            <li
+              key={strength}
+              className="rounded-lg border border-border bg-background/40 p-3"
+            >
+              ✓ {strength}
+            </li>
+          )
+        )}
+      </ul>
+    </div>
+  
+    <div>
+      <h3 className="font-semibold text-yellow-400">
+        Areas To Improve
+      </h3>
+
+      <ul className="mt-3 space-y-2">
+        {interviewAssessment.weaknesses.map(
+          (weakness) => (
+            <li
+              key={weakness}
+              className="rounded-lg border border-border bg-background/40 p-3"
+            >
+              ⚠ {weakness}
+            </li>
+          )
+        )}
+      </ul>
+    </div>
+
+  </div>
+</section>
+      )}
 
 <section className="rounded-2xl border border-border bg-surface/50 p-6 lg:col-span-3">
   <p className="text-sm font-medium uppercase tracking-widest text-accent">

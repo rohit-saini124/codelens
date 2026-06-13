@@ -42,9 +42,13 @@ export async function getLeetCodeProfile(username: string) {
     globalRanking
     topPercentage
   }
-    userContestRankingHistory(username: $username) {
-  attended
-  rating
+  userContestRankingHistory(username: $username) {
+    attended
+    rating
+
+    contest {
+      title
+    }
 }
   
 }  

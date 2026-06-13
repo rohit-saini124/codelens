@@ -1,3 +1,4 @@
+import ContestRatingChart from "@/components/ContestRatingChart";
 import { analyzeContestHistory } from "@/lib/contest-analysis";
 import { calculateMetrics } from "@/lib/metrics";
 import { generateObservations } from "@/lib/analysis";
@@ -402,6 +403,13 @@ export default async function AnalyzePage({ params }: AnalyzePageProps) {
 
 )}
 </section>
+
+{profile?.contestHistory &&
+ profile.contestHistory.length >= 1 && (
+  <ContestRatingChart
+    history={profile.contestHistory}
+  />
+)}
 
 
 <section className="rounded-2xl border border-border bg-surface/50 p-6 lg:col-span-3">

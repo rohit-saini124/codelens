@@ -11,11 +11,15 @@ import {
 } from "recharts";
 
 type Props = {
-  history: {
-    attended: boolean;
-    rating: number;
-  }[];
-};
+    history: {
+      attended: boolean;
+      rating: number;
+  
+      contest?: {
+        title?: string;
+      };
+    }[];
+  };
 
 export default function ContestRatingChart({
   history,

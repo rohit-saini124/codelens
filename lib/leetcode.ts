@@ -1,38 +1,53 @@
 export async function getLeetCodeProfile(username: string) {
   const query = `
     query getUserProfile($username: String!) {
-      matchedUser(username: $username) {
-  username
+  matchedUser(username: $username) {
+    username
 
-  tagProblemCounts {
-    advanced {
-      tagName
-      tagSlug
-      problemsSolved
+    profile {
+      ranking
     }
-    intermediate {
-      tagName
-      tagSlug
-      problemsSolved
-    }
-    fundamental {
-      tagName
-      tagSlug
-      problemsSolved
-    }
-  }
 
-  profile {
-    ranking
-  }
-        submitStatsGlobal {
-          acSubmissionNum {
-            difficulty
-            count
-          }
-        }
+    tagProblemCounts {
+      advanced {
+        tagName
+        tagSlug
+        problemsSolved
+      }
+
+      intermediate {
+        tagName
+        tagSlug
+        problemsSolved
+      }
+
+      fundamental {
+        tagName
+        tagSlug
+        problemsSolved
       }
     }
+
+    submitStatsGlobal {
+      acSubmissionNum {
+        difficulty
+        count
+      }
+    }
+  }
+
+  userContestRanking(username: $username) {
+    attendedContestsCount
+    rating
+    globalRanking
+    topPercentage
+  }
+    userContestRankingHistory(username: $username) {
+  attended
+  rating
+}
+  
+}  
   `;
 
   const response = await fetch("https://leetcode.com/graphql", {
@@ -61,7 +76,20 @@ export async function getLeetCodeProfile(username: string) {
   }
 
   const stats = user.submitStatsGlobal.acSubmissionNum;
+  const contest = result?.data?.userContestRanking;
 
+  const contestHistory = result?.data?.userContestRankingHistory ?? [];
+
+  console.log(
+   "History Length:",
+  contestHistory.length
+  );
+
+  console.log(
+   "Attended Contests:",
+    contest?.attendedContestsCount
+  );
+  result?.data?.userContestRankingHistory ?? [];
   return {
     username: user.username,
     ranking: user.profile.ranking,
@@ -75,5 +103,15 @@ export async function getLeetCodeProfile(username: string) {
       stats.find((s: any) => s.difficulty === "Hard")?.count ?? 0,
   
     topics: user.tagProblemCounts,
+    contest: contest
+  ? {
+      rating: contest.rating,
+      attended: contest.attendedContestsCount,
+      globalRanking: contest.globalRanking,
+      topPercentage: contest.topPercentage,
+    }
+  : null,
+  
+  contestHistory,
   };
 }

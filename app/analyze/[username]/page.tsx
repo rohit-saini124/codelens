@@ -1,3 +1,4 @@
+import { analyzeContestHistory } from "@/lib/contest-analysis";
 import { calculateMetrics } from "@/lib/metrics";
 import { generateObservations } from "@/lib/analysis";
 import { getLeetCodeProfile } from "@/lib/leetcode";
@@ -41,6 +42,10 @@ export default async function AnalyzePage({ params }: AnalyzePageProps) {
   const metrics = profile
   ? calculateMetrics(profile)
   : null;
+  const contestMetrics =
+  profile?.contestHistory
+    ? analyzeContestHistory(profile.contestHistory)
+    : null;
 
   const topTopics = profile
   ? [
@@ -270,6 +275,132 @@ export default async function AnalyzePage({ params }: AnalyzePageProps) {
   
   </div>
   )}
+</section>
+
+<section className="rounded-2xl border border-border bg-surface/50 p-6 lg:col-span-3">
+  <p className="text-sm font-medium uppercase tracking-widest text-accent">
+    Contest Analytics
+  </p>
+
+  {profile?.contest ? (
+    <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="rounded-xl border border-border bg-background/40 p-4">
+        <p className="text-xs text-muted">
+          Rating
+        </p>
+
+        <p className="mt-2 text-2xl font-semibold">
+          {Math.round(profile.contest.rating)}
+        </p>
+      </div>
+
+      <div className="rounded-xl border border-border bg-background/40 p-4">
+        <p className="text-xs text-muted">
+          Contests Attended
+        </p>
+
+        <p className="mt-2 text-2xl font-semibold">
+          {profile.contest.attended}
+        </p>
+      </div>
+
+      <div className="rounded-xl border border-border bg-background/40 p-4">
+        <p className="text-xs text-muted">
+          Global Ranking
+        </p>
+
+        <p className="mt-2 text-2xl font-semibold">
+          {profile.contest.globalRanking.toLocaleString()}
+        </p>
+      </div>
+
+      <div className="rounded-xl border border-border bg-background/40 p-4">
+        <p className="text-xs text-muted">
+          Top Percentage
+        </p>
+
+        <p className="mt-2 text-2xl font-semibold">
+          {profile.contest.topPercentage.toFixed(1)}%
+        </p>
+      </div>
+    </div>
+  ) : (
+    <div className="mt-4 rounded-xl border border-border bg-background/40 p-4">
+      No contest data available.
+    </div>
+  )}
+</section>
+
+<section className="rounded-2xl border border-border bg-surface/50 p-6 lg:col-span-3">
+  <p className="text-sm font-medium uppercase tracking-widest text-accent">
+    Contest Assessment
+  </p>
+
+  {contestMetrics?.status === "complete" ? (
+
+<div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+
+  
+<div className="rounded-xl border border-border bg-background/40 p-4">
+  <p className="text-xs text-muted">
+    Rating Progression
+  </p>
+
+  <p className="mt-2 text-xl font-semibold">
+    {contestMetrics.firstRating} → {contestMetrics.currentRating}
+  </p>
+
+  <p className="mt-1 text-sm text-muted">
+    (+{contestMetrics.growth})
+  </p>
+</div>
+
+<div className="rounded-xl border border-border bg-background/40 p-4">
+  <p className="text-xs text-muted">
+    Peak Rating
+  </p>
+
+  <p className="mt-2 text-2xl font-semibold">
+    {contestMetrics.peakRating}
+  </p>
+</div>
+
+<div className="rounded-xl border border-border bg-background/40 p-4">
+  <p className="text-xs text-muted">
+    Current Trend
+  </p>
+
+  <p className="mt-2 text-2xl font-semibold">
+    {contestMetrics.trend}
+  </p>
+</div>
+
+<div className="rounded-xl border border-border bg-background/40 p-4">
+  <p className="text-xs text-muted">
+    Contests Analyzed
+  </p>
+
+  <p className="mt-2 text-2xl font-semibold">
+    {contestMetrics.contests}
+  </p>
+</div>
+
+    </div>
+
+) : contestMetrics?.status === "insufficient" ? (
+
+<div className="mt-4 rounded-xl border border-border bg-background/40 p-4">
+  Contest analytics require at least 2 rated contests.
+  Current contests analyzed: {contestMetrics.contests}
+</div>
+
+) : (
+
+<div className="mt-4 rounded-xl border border-border bg-background/40 p-4">
+  No contest history available for this profile.
+</div>
+
+)}
 </section>
 
 

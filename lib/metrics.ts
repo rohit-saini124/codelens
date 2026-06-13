@@ -8,6 +8,12 @@ type Profile = {
       intermediate: { tagName: string; problemsSolved: number }[];
       fundamental: { tagName: string; problemsSolved: number }[];
     };
+    contest: {
+        rating: number;
+        attended: number;
+        globalRanking: number;
+        topPercentage: number;
+      } | null;
   };
   
   export function calculateMetrics(profile: Profile) {
@@ -53,6 +59,8 @@ type Profile = {
       profile.topics.advanced.length * 8,
       40
     );
+    const contestRating = profile.contest?.rating ?? null;
+    const contestsAttended = profile.contest?.attended ?? 0;
   
     let coverageLevel = "Early Stage";
 
@@ -97,5 +105,7 @@ return {
   coverageLevel,
   difficultyProfile,
   confidence,
+  contestRating,
+  contestsAttended,
 };
   }

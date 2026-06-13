@@ -1,3 +1,4 @@
+import { calculateMetrics } from "@/lib/metrics";
 import { generateObservations } from "@/lib/analysis";
 import { getLeetCodeProfile } from "@/lib/leetcode";
 import type { Metadata } from "next";
@@ -37,6 +38,10 @@ export default async function AnalyzePage({ params }: AnalyzePageProps) {
   const observations = profile
   ? generateObservations(profile)
   : [];
+  const metrics = profile
+  ? calculateMetrics(profile)
+  : null;
+
   const topTopics = profile
   ? [
       ...profile.topics.fundamental,
@@ -205,6 +210,68 @@ export default async function AnalyzePage({ params }: AnalyzePageProps) {
 
 </section>
 
+<section className="rounded-2xl border border-border bg-surface/50 p-6 lg:col-span-3">
+  <p className="text-sm font-medium uppercase tracking-widest text-accent">
+    Profile Assessment
+  </p>
+
+  {metrics && (
+    <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+
+    <div className="rounded-xl border border-border bg-background/40 p-4">
+      <p className="text-xs text-muted">
+        Coverage Level
+      </p>
+  
+      <p className="mt-2 text-2xl font-semibold">
+        {metrics.coverageLevel}
+      </p>
+    </div>
+  
+    <div className="rounded-xl border border-border bg-background/40 p-4">
+      <p className="text-xs text-muted">
+        Topic Breadth
+      </p>
+  
+      <p className="mt-2 text-2xl font-semibold">
+        {metrics.topicCount}
+      </p>
+    </div>
+  
+    <div className="rounded-xl border border-border bg-background/40 p-4">
+      <p className="text-xs text-muted">
+        Difficulty Profile
+      </p>
+  
+      <p className="mt-2 text-2xl font-semibold">
+        {metrics.difficultyProfile}
+      </p>
+    </div>
+  
+    <div className="rounded-xl border border-border bg-background/40 p-4">
+      <p className="text-xs text-muted">
+        Advanced Topics
+      </p>
+  
+      <p className="mt-2 text-2xl font-semibold">
+        {metrics.advancedTopicCount}
+      </p>
+    </div>
+  
+    <div className="rounded-xl border border-border bg-background/40 p-4">
+      <p className="text-xs text-muted">
+        Confidence Level
+      </p>
+  
+      <p className="mt-2 text-2xl font-semibold">
+        {metrics.confidence}
+      </p>
+    </div>
+  
+  </div>
+  )}
+</section>
+
 
 <section className="rounded-2xl border border-border bg-surface/50 p-6 lg:col-span-3">
   <p className="text-sm font-medium uppercase tracking-widest text-accent">
@@ -225,5 +292,6 @@ export default async function AnalyzePage({ params }: AnalyzePageProps) {
         </div>
       </main>
     </div>
+
   );
 }

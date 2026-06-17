@@ -1,3 +1,4 @@
+
 import { assessInterviewReadiness } from "@/lib/interview-assessment";
 import { analyzeWeaknesses } from "@/lib/weakness-analysis";
 import ContestRatingChart from "@/components/ContestRatingChart";
@@ -405,7 +406,7 @@ export default async function AnalyzePage({ params }: AnalyzePageProps) {
 
 {interviewAssessment && (
   <section className="rounded-2xl border border-border bg-surface/50 p-6 lg:col-span-3">
-   <p>
+   <p className="text-sm font-medium uppercase tracking-widest text-accent">
     Interview Readiness
   </p>
 
@@ -514,6 +515,8 @@ export default async function AnalyzePage({ params }: AnalyzePageProps) {
   </div>
 </section>
       )}
+
+
 
 <section className="rounded-2xl border border-border bg-surface/50 p-6 lg:col-span-3">
   <p className="text-sm font-medium uppercase tracking-widest text-accent">

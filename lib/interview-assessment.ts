@@ -27,7 +27,7 @@ type Topic = {
     overallScore: number;
   
     problemSolvingScore: number;
-    topicCoverageScore: number;
+    difficultyExposureScore: number;
     coreTopicScore: number;
     advancedExposureScore: number;
     contestScore: number;
@@ -40,15 +40,15 @@ type Topic = {
 
   const CORE_TOPICS = [
     "Array",
-    "Hash Table",
-    "String",
-    "Two Pointers",
-    "Binary Search",
-    "Tree",
-    "Graph",
-    "Dynamic Programming",
-    "Greedy",
-    "Heap",
+  "String",
+  "Hash Table",
+  "Binary Search",
+  "Tree",
+  "Graph",
+  "Dynamic Programming",
+  "Greedy",
+  "Heap",
+  "Backtracking",
   ];
   
   export function assessInterviewReadiness(
@@ -66,24 +66,33 @@ type Topic = {
         25
       );
 
-      const topicCoverageScore = Math.min(
-        (allTopics.length / 30) * 25,
-        25
+      const difficultyExposureScore = Math.min(
+        (
+          (
+            profile.medium +
+            profile.hard * 3
+          ) / 200
+        ) * 20,
+        20
       );
 
-      const coveredCoreTopics = CORE_TOPICS.filter(
-        (coreTopic) =>
-          allTopics.some(
-            (topic) =>
-              topic.tagName === coreTopic &&
-              topic.problemsSolved >= 5
-          )
+      const coreTopicRawScore =
+  CORE_TOPICS.reduce(
+    (score, topicName) => {
+      const topic = allTopics.find(
+        (t) => t.tagName === topicName
       );
-    
-      const coreTopicScore =
-        (coveredCoreTopics.length /
-          CORE_TOPICS.length) *
-        25;
+
+      const solved =
+        topic?.problemsSolved ?? 0;
+
+      return score + Math.min(solved, 20);
+    },
+    0
+  );
+
+const coreTopicScore =
+  (coreTopicRawScore / 200) * 25;
 
         const advancedExposureScore = Math.min(
             (profile.topics.advanced.length / 10) * 15,
@@ -93,14 +102,14 @@ type Topic = {
 
           const contestScore = profile.contest
           ? Math.min(
-              (profile.contest.rating / 2000) * 10,
-              10
+              (profile.contest.rating / 2000) * 5,
+              5
             )
           : 0;
 
           const overallScore = Math.round(
             problemSolvingScore +
-              topicCoverageScore +
+              difficultyExposureScore +
               coreTopicScore +
               advancedExposureScore +
               contestScore
@@ -225,8 +234,8 @@ type Topic = {
             problemSolvingScore:
               Math.round(problemSolvingScore),
         
-            topicCoverageScore:
-              Math.round(topicCoverageScore),
+              difficultyExposureScore:
+              Math.round(difficultyExposureScore),
         
             coreTopicScore:
               Math.round(coreTopicScore),

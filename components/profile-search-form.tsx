@@ -31,10 +31,14 @@ export function ProfileSearchForm({
   buttonLabel = "Analyze Profile",
 }: ProfileSearchFormProps) {
   const router = useRouter();
+
   const [username, setUsername] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(
+    e: FormEvent<HTMLFormElement>
+  ) {
     e.preventDefault();
 
     if (!isValidUsername(username)) {
@@ -43,7 +47,28 @@ export function ProfileSearchForm({
     }
 
     setError(null);
-    router.push(getAnalyzePath(username));
+    setLoading(true);
+
+    try {
+      const response = await fetch(
+        `/api/leetcode/${username}`
+      );
+
+      const data = await response.json();
+
+      if (!data.success) {
+        setError("User not found.");
+        return;
+      }
+
+      router.push(getAnalyzePath(username));
+    } catch {
+      setError(
+        "Unable to verify profile. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -54,33 +79,48 @@ export function ProfileSearchForm({
         noValidate
       >
         <div className="relative flex-1">
-          <label htmlFor="leetcode-username" className="sr-only">
+          <label
+            htmlFor="leetcode-username"
+            className="sr-only"
+          >
             LeetCode username
           </label>
+
           <input
             id="leetcode-username"
             type="text"
             value={username}
             onChange={(e) => {
               setUsername(e.target.value);
-              if (error) setError(null);
+
+              if (error) {
+                setError(null);
+              }
             }}
             placeholder="LeetCode username"
             aria-invalid={error ? true : undefined}
-            aria-describedby={error ? "username-error" : undefined}
+            aria-describedby={
+              error ? "username-error" : undefined
+            }
             className="h-12 w-full rounded-xl border border-border bg-surface/80 px-4 py-3.5 text-foreground placeholder:text-zinc-500 backdrop-blur-sm transition focus:border-accent/50 focus:outline-none focus:ring-2 focus:ring-accent/20"
             autoComplete="off"
             spellCheck={false}
           />
         </div>
+
         <button
           type="submit"
-          className="group inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-accent to-accent-secondary px-6 py-3 font-semibold text-zinc-950 transition hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-accent/40 sm:px-8"
+          disabled={loading}
+          className="group inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-accent to-accent-secondary px-6 py-3 font-semibold text-zinc-950 transition hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-accent/40 disabled:cursor-not-allowed disabled:opacity-70 sm:px-8"
         >
-          {buttonLabel}
+          {loading
+            ? "Checking..."
+            : buttonLabel}
+
           <ArrowRightIcon className="h-4 w-4 transition group-hover:translate-x-0.5" />
         </button>
       </form>
+
       {error && (
         <p
           id="username-error"

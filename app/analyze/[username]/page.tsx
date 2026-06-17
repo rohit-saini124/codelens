@@ -79,8 +79,34 @@ export default async function AnalyzePage({ params }: AnalyzePageProps) {
   : [];
 
   if (!profile) {
-    notFound();
-  } 
+    return (
+      <div className="min-h-screen bg-background">
+        <main className="mx-auto max-w-4xl px-6 py-16">
+          <div className="rounded-2xl border border-border bg-surface/50 p-8 text-center">
+            <h1 className="text-2xl font-bold">
+              Profile Not Found
+            </h1>
+  
+            <p className="mt-4 text-muted">
+              We couldn't find a public LeetCode profile with
+              the username "{username}".
+            </p>
+  
+            <p className="mt-2 text-muted">
+              Please check the username and try again.
+            </p>
+  
+            <a
+              href="/"
+              className="mt-6 inline-block rounded-lg border border-border px-4 py-2"
+            >
+              Search Another Profile
+            </a>
+          </div>
+        </main>
+      </div>
+    );
+  }
   let insight = "";
 
   if (profile.solved < 50) {
@@ -409,10 +435,10 @@ export default async function AnalyzePage({ params }: AnalyzePageProps) {
 
     <div className="rounded-xl border border-border p-4">
       <p className="text-xs text-muted">
-        Topic Coverage
+        Difficulty Coverage
       </p>
       <p className="mt-1 text-2xl font-semibold">
-        {interviewAssessment.topicCoverageScore}
+        {interviewAssessment.difficultyExposureScore}
       </p>
     </div>
 
